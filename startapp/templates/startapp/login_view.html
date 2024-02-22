@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+
+<section class="login">
+    <div class="image_logo">
+        <img src="{% static 'img/icono-logo-fondo-azul.png' %}" alt="logo">
+    </div>
+    <div class="login_box">
+        <div class="container">
+            {% if message %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endif %}
+            <h3 class="login_title">Iniciar sección</h3>
+    
+            <form action="{% url 'startapp:login_view' %}" method="post">
+                {% csrf_token %}
+                <div class="input_info">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" value="{{ email }}">
+                </div>
+                <div class="input_info">
+                    <label for="password">Contraseña</label>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" class="form-control" required>
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
+                            <span class="material-symbols-outlined">
+                                visibility
+                            </span>
+                        </button>
+                    </div>
+                </div>
+    
+                <div class="login_buttons">
+                    <button class="btn btn-primary" type="submit" style="background-color: #040d26;">Iniciar sección</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

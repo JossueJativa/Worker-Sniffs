@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block sidebar %}
+<div class="select_item">
+    <ul class="list_sidebar">
+        <a href="{% url 'manager:principal_page' %}">
+            <li class="item_sidebar" style="color: blue; text-decoration: underline;">
+                Inicio
+            </li>
+        </a>
+        <a href="{% url 'manager:workers' %}">
+            <li class="item_sidebar">
+                Trabajadores
+            </li>
+        </a>
+        <a href="{% url 'manager:clients' %}">
+            <li class="item_sidebar">
+                Clientes
+            </li>
+        </a>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'manager:principal_page' %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+    <div class="container text-center body_form">
+        <div class="row">
+            <div class="col">
+                <h3 class="principal_text">Crear Usuario</h3>
+                <div class="container_create">
+                
+                    <div class="input_info">
+                        <label for="first_name">Nombre/s</label>
+                        <input type="text" name="first_name" id="first_name" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="last_name">Apellido/s</label>
+                        <input type="text" name="last_name" id="last_name" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="phone">Celular</label>
+                        <input type="number" name="phone" id="phone" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="identity">Cedula de identidad/RUC/Pasaporte</label>
+                        <input type="number" name="identity" id="identity" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="password">Contraseña temporal</label>
+                        <div class="password-container">
+                            <input type="password" name="password" id="password" class="form-control" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">
+                                <span class="material-symbols-outlined">
+                                    visibility
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="confirm">Confirmar contraseña temporal</label>
+                        <div class="password-container">
+                            <input type="password" name="confirm" id="confirm" class="form-control" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirm')">
+                                <span class="material-symbols-outlined">
+                                    visibility
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h3 class="principal_text">Asignar tipo de trabajador</h3>
+                <div class="container_create">
+                    <div class="input_info">
+                        <label for="worker_type">Selecciona el tipo del trabajo</label>
+                        <select name="worker_type" id="worker_type" class="select_worker">
+                            <option value="0">Seleccionar</option>
+                            <option value="1">Callcenter</option>
+                            <option value="2">Tecnico</option>
+                            <option value="3">Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="image">Subir una foto del trabajador</label>
+                        <input type="file" name="image" id="image" class="form-control" required onchange="previewImage(this)">
+
+                        <div id="imagePreview">
+                            <img id="preview" src="" alt="Vista previa de la imagen">
+                        </div>
+                    </div>
+
+                    <div class="input_info">
+                        <button type="submit" class="btn btn-success">Registrar Usuario</button>
+                    </div>
+                </div>
+
+                {% if message %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="alert alert-success" role="alert">
+                    {{ success }}: Nombre de usuario: {{ username }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

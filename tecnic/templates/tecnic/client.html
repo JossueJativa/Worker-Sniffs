@@ -1,0 +1,143 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block sidebar %}
+<div class="select_item">
+    <ul class="list_sidebar">
+        <a href="{% url 'tecnic:intro' %}">
+            <li class="item_sidebar">
+                Inicio
+            </li>
+        </a>
+        <a href="{% url 'tecnic:configuration' %}">
+            <li class="item_sidebar">
+                Configuración
+            </li>
+        </a>
+        <li>Clientes</li>
+        {% for client_id in  tecnic.clients.all %}
+        <a href="{% url 'tecnic:client' client_id.id %}" {% if client_id.id == client.id %} style="color: blue; text-decoration: underline;" {% endif %}>
+            <li class="item_sidebar">
+                {{ client_id.username }} - {{ client_id.identity }}
+            </li>
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container text-center body_form">
+    <div class="row">
+        <div class="col">
+            <h3 class="principal_text">Crear Comprador</h3>
+            <div class="container_create">
+                <div class="input_info">
+                    <label for="username">Nombre del comprador</label>
+                    <input type="text" name="username" id="username" class="form-control" value="{{ client.username }}" readonly>
+                </div>
+
+                <div class="input_info">
+                    <label for="identity">Cedula de identidad/RUC/Pasaporte</label>
+                    <input type="number" name="identity" id="identity" class="form-control" value="{{ client.identity }}" readonly>
+                </div>
+
+                <div class="input_info">
+                    <label for="phone">Celular</label>
+                    <input type="number" name="phone" id="phone" class="form-control" value="{{ client.phone }}" readonly>
+                </div>
+
+                <div class="input_info">
+                    <label>Productos a instalar</label>
+                    <table class="table table-dark table-bordered caption-top">
+                        <caption style="color: white;">Lista de productos</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in client.products_bought.all %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h3 class="principal_text">Subir comprobante de pago</h3>
+            <div class="container_create">
+                <div class="input_info">
+                    <label for="date_instalation">Fecha de instalación</label>
+                    <input type="date" name="date_instalation" id="date_instalation" class="form-control" value="{{ client.date_instalation|date:'Y-m-d' }}" readonly>
+                </div>                           
+                <div class="input_info">
+                    <label for="phone">Parte del día</label>
+                    <select name="part_of_day" id="part_of_day" class="select_worker" disabled>
+                        <option value="0">Seleccionar</option>
+                        <option value="mañana" {% if client.part_of_day == 'mañana' %} selected {% endif %}>Mañana</option>
+                        <option value="tarde" {% if client.part_of_day == 'tarde' %} selected {% endif %}>Tarde</option>
+                    </select>
+                </div>
+                <div class="input_info">
+                    <label for="options_to_give_instalation">Seleccione el tipo de entrega</label>
+                    <select name="options_to_give_instalation" id="options_to_give_instalation" class="select_worker" disabled>
+                        <option value="0">Seleccionar</option>
+                        <option value="Recoger" {% if client.options_to_give_instalation == 'Recoger' %} selected {% endif %}>Recoger</option>
+                        <option value="Delivery" {% if client.options_to_give_instalation == 'Delivery' %} selected {% endif %}>Delivery</option>
+                    </select>
+                </div>
+
+                <div class="input_info">
+                    <label for="status_instalation">Estatus de instalación</label>
+                    <input type="text" name="status_instalation" id="status_instalation" class="form-control" value="{{ client.status_instalation}}" readonly>
+                </div>
+
+                <form id="changeStatusForm" method="post" action="{% url 'tecnic:change_status' client.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" id="id_status">
+                    <div class="container_create">
+                        <div class="input_info">
+                            <button type="button" class="btn btn-danger" onclick="changeStatus('Retrasado')">Cambiar estado a Retrasado</button>
+                        </div>
+                        {% if client.options_to_give_instalation == 'Recoger' %}
+                        <div class="input_info">
+                            <button type="button" class="btn btn-warning" onclick="changeStatus('Instalando')">Cambiar estado a Instalando</button>
+                        </div>
+                        {% else %}
+                        <div class="input_info">
+                            <button type="button" class="btn btn-warning" onclick="changeStatus('Viajando')">Cambiar estado a Viajando</button>
+                        </div>
+                        {% endif %}
+                        <div class="input_info">
+                            <button type="button" class="btn btn-success" onclick="changeStatus('Terminado')">Cambiar estado a Terminado</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if message %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="alert alert-success" role="alert">
+                    {{ success }}: Nombre de usuario: {{ username }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeStatus(status) {
+        document.getElementById('id_status').value = status; // Agrega un campo oculto con el valor del estado
+        document.getElementById('changeStatusForm').submit(); // Envía el formulario
+    }
+</script>
+{% endblock %}

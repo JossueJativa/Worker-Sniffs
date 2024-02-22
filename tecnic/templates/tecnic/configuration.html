@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block sidebar %}
+<div class="select_item">
+    <ul class="list_sidebar">
+        <a href="{% url 'tecnic:intro' %}">
+            <li class="item_sidebar">
+                Inicio
+            </li>
+        </a>
+        <a href="">
+            <li class="item_sidebar" style="color: blue; text-decoration: underline;">
+                Configuración
+            </li>
+        </a>
+        <li>Clientes</li>
+        {% for client in  tecnic.clients.all %}
+        <a href="{% url 'tecnic:client' client.id %}">
+            <li class="item_sidebar">
+                {{ client.username }} - {{ client.identity }}
+            </li>
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container text-center body_form">
+    <div class="row">
+        <div class="col">
+            <h3 class="principal_text">Seleccionar ubicación</h3>
+            <div class="container_create">
+                <form action="{% url 'tecnic:configuration' %}" method="post">
+                    {% csrf_token %}
+                    <div class="input_info">
+                        <label for="business_name">Ingresa nombre del negocio</label>
+                        <input type="text" name="business_name" id="business_name" placeholder="{{ tecnic.business_name }}" class="form-control">
+                    </div>
+                    <div class="input_info">
+                        <label for="city">Ingresa la ciudad</label>
+                        <input type="text" name="city" id="city" placeholder="{{ tecnic.city }}" class="form-control">
+                    </div>
+                    <div class="input_info">
+                        <label for="country">Ingresa el pais</label>
+                        <input type="text" name="country" id="country" placeholder="{{ tecnic.country }}" class="form-control">
+                    </div>
+                    <br>
+                    <div class="input_info">
+                        <button type="submit" class="btn btn-success">Cambiar ubicación</button>
+                    </div>
+                </form>             
+            </div>
+        </div>
+        <div class="col">
+            <h3 class="principal_text">Mapa</h3>
+            <div class="container_create">
+                <div class="map">
+                    {{ map|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

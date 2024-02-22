@@ -1,0 +1,97 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block sidebar %}
+<div class="select_item">
+    <ul class="list_sidebar">
+        <a href="{% url 'tecnic:intro' %}">
+            <li class="item_sidebar" style="color: blue; text-decoration: underline;">
+                Inicio
+            </li>
+        </a>
+        <a href="{% url 'tecnic:configuration' %}">
+            <li class="item_sidebar">
+                Configuración
+            </li>
+        </a>
+        <li>Clientes</li>
+        {% for client in  tecnic.clients.all %}
+        <a href="{% url 'tecnic:client' client.id %}">
+            <li class="item_sidebar">
+                {{ client.username }} - {{ client.identity }}
+            </li>
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="body_form">
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+        {{ messages }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">
+        {{ success }}
+    </div>
+    {% endif %}
+
+    <div class="search_information">
+        <div class="box_finding">
+            <label for="inpSearch1">Filtrar por cédula:</label><br>
+            <input type="text" id="inpSearch1" name="inpSearch1" placeholder="Ingresar el código">
+        </div>
+        <div class="box_finding">
+            <label for="inpSearch2">Filtrar por celular:</label><br>
+            <input type="text" id="inpSearch2" name="inpSearch2" placeholder="Ingresar el código">
+        </div>
+    </div>
+    <table class="table table-dark table-bordered caption-top" id="searchtable_callcenters">
+        <caption style="color: white;">Lista de clientes</caption>
+        <thead>
+            <tr>
+                <th scope="col">Usuario</th>
+                <th scope="col">Cédula/RUC/Passaporte</th>
+                <th scope="col">Celular</th>
+                <th scope="col">Día de instalación</th>
+                <th scope="col">Manaña/Tarde</th>
+                <th scope="col">Estado de la instalación</th>
+                <th scope="col">Productos Comprados</th>
+                <th scope="col">Recoger/Delivery</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in tecnic.clients.all %}
+            <tr class="searchable">
+                <td>{{ client.username }}</td>
+                <td>{{ client.identity }}</td>
+                <td>{{ client.phone }}</td>
+                <td>{{ client.date_instalation }}</td>
+                <td>{{ client.part_of_day }}</td>
+                <td>{{ client.status_instalation }}</td>
+                <td>
+                    {% for product in client.products_bought.all %}
+                        {{ product.name }}<br>
+                    {% endfor %}
+                </td>
+                <td>{{ client.options_to_give_instalation }}</td>
+                <td class="actions-buttons">
+                    <a href="{% url 'tecnic:client' client.id %}" class="btn btn-success">Cambiar estatus</a>
+                    <form id="changeStatusForm" method="post" action="{% url 'tecnic:change_status' client.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="Retrasado">
+                        <button type="submit" class="btn btn-danger">Atrazar estatus</button>
+                    </form>
+                    <br>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

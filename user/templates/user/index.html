@@ -1,0 +1,83 @@
+{% extends 'user/layout_user.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container text-center body_form">
+    <div class="row">
+        <div class="col">
+            <h3 class="principal_text">Informacion del usuario</h3>
+            <div class="container_create">
+                <div class="input_info">
+                    <label for="username">Nomrbe del usuario</label>
+                    <input type="text" name="username" id="username" class="form-control" value="{{ client.username }}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="city">Cedula del usuario</label>
+                    <input type="text" name="city" id="city" class="form-control" value="{{ client.identity }}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="country">Celular del usuario</label>
+                    <input type="text" name="country" id="country" class="form-control" value="{{ client.phone }}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="country">Forma de entrega del producto</label>
+                    <input type="text" name="country" id="country" class="form-control" value="{{ client.options_to_give_instalation }}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="date_instalation">Fecha de instalación</label>
+                    <input type="date" name="date_instalation" id="date_instalation" class="form-control" value="{{ client.date_instalation|date:'Y-m-d' }}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="days_since_installation">Días faltantes para instalar</label>
+                    <input type="text" name="days_since_installation" id="days_since_installation" class="form-control" readonly>
+                </div>
+                <div class="input_info">
+                    <label>Productos a {{ client.options_to_give_instalation }}</label>
+                    <table class="table caption-top">
+                        <caption>Lista de productos</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in client.products_bought.all %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h3 class="principal_text">Mapa del servicio tecnico</h3>
+            <div class="container_create">
+                <div class="input_info">
+                    <label for="phone">Parte del día</label>
+                    <select name="part_of_day" id="part_of_day" class="select_worker" disabled>
+                        <option value="0">Seleccionar</option>
+                        <option value="mañana" {% if client.part_of_day == 'mañana' %} selected {% endif %}>Mañana</option>
+                        <option value="tarde" {% if client.part_of_day == 'tarde' %} selected {% endif %}>Tarde</option>
+                    </select>
+                </div>
+                <div class="input_info">
+                    <label for="status_instalation">Estatus de instalación</label>
+                    <input type="text" name="status_instalation" id="status_instalation" class="form-control" value="{{ client.status_instalation}}" readonly>
+                </div>
+                <div class="input_info">
+                    <label for="business_name">Informacion de ubicación</label>
+                    <input type="text" name="business_name" id="business_name" class="form-control" value="{{ tecnic.business_name }}, {{ tecnic.city }}, {{ tecnic.country }}" readonly>
+                </div>
+                <div class="input_info">
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ lat }},{{ lon }}">Ver ubicación en Google Maps</a>
+                    <div class="map">
+                        {{ map|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

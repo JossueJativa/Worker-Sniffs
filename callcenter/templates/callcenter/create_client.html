@@ -1,0 +1,126 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block sidebar %}
+<div class="select_item">
+    <ul class="list_sidebar">
+        <a href="{% url 'callcenter:index' %}">
+            <li class="item_sidebar">
+                Administrar clientes
+            </li>
+        </a>
+        <a href="{% url 'callcenter:create_client' %}">
+            <li class="item_sidebar" style="color: blue; text-decoration: underline;">
+                Crear un pedido
+            </li>
+        </a>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'callcenter:create_client' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="container text-center body_form">
+        <div class="row">
+            <div class="col">
+                <h3 class="principal_text">Crear Comprador</h3>
+                <div class="container_create">
+                    <div class="input_info">
+                        <label for="username">Nombre del comprador</label>
+                        <input type="text" name="username" id="username" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="identity">Cedula de identidad/RUC/Pasaporte</label>
+                        <input type="number" name="identity" id="identity" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label for="phone">Celular</label>
+                        <input type="number" name="phone" id="phone" class="form-control" required>
+                    </div>
+
+                    <div class="input_info">
+                        <label>Seleccionar estado</label>
+                        <table class="table table-dark table-bordered caption-top">
+                            <caption style="color: white;">Lista de productos</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Precio</th>
+                                    <th scope="col">Seleccionar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.price }}</td>
+                                    <td><input type="checkbox" name="status" class="checkbox-producto" data-precio="{{ product.price }}" value="{{ product.id }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <h3 class="principal_text">Subir comprobante de pago</h3>
+                <div class="container_create">
+                    <div class="input_info">
+                        <label for="total_price">Precio a pagar</label>
+                        <input type="number" name="total_price" id="total_price" class="form-control" step="0.01" readonly>
+                    </div>
+                    <div class="input_info">
+                        <label for="date_instalation">Escoger fecha de instalación</label>
+                        <input type="date" name="date_instalation" id="date_instalation" class="form-control" required>
+                    </div>
+                    <div class="input_info">
+                        <label for="phone">Parte del día</label>
+                        <select name="part_of_day" id="part_of_day" class="select_worker">
+                            <option value="0">Seleccionar</option>
+                            <option value="mañana">Mañana</option>
+                            <option value="tarde">Tarde</option>
+                        </select>
+                    </div>
+                    <div class="input_info">
+                        <label for="options_to_give_instalation">Seleccione el tipo de entrega</label>
+                        <select name="options_to_give_instalation" id="options_to_give_instalation" class="select_worker">
+                            <option value="0">Seleccionar</option>
+                            <option value="Recoger">Recoger</option>
+                            <option value="Delivery">Delivery</option>
+                        </select>
+                    </div>
+                    <div class="container_create">
+                        <div class="input_info">
+                            <label for="image">Subir una foto del recibo</label>
+                            <input type="file" name="image" id="image" class="form-control" required onchange="previewImage(this)">
+    
+                            <div id="imagePreview">
+                                <img id="preview" src="" alt="Vista previa de la imagen">
+                            </div>
+                        </div>
+    
+                        <div class="input_info">
+                            <button type="submit" class="btn btn-success">Registrar Usuario</button>
+                        </div>
+                    </div>
+    
+                    {% if message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+    
+                    {% if success %}
+                    <div class="alert alert-success" role="alert">
+                        {{ success }}: Nombre de usuario: {{ username }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
