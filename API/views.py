@@ -42,6 +42,15 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
+    @action(detail=False, methods=['GET'], url_path='search-by-identity/(?P<identity>[^/.]+)', url_name='search-by-identity')
+    def search_by_identity(self, request, *args, **kwargs):
+        identity = kwargs.get('identity')
+        client = Client.objects.filter(identity=identity).first()  # Obtener el primer cliente que coincida
+        if not client:
+            return Response({'error': 'No se encontró ningún cliente con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(client)  # No usar many=False
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class CertificateViewSet(viewsets.ModelViewSet):
     queryset = Certificate.objects.all()
     serializer_class = CertificateSerializer
@@ -54,9 +63,14 @@ class TecnicViewSet(viewsets.ModelViewSet):
     def search_by_user(self, request, *args, **kwargs):
         user_id = kwargs.get('user')
         user = get_object_or_404(User, pk=user_id)
-        tecnic = Tecnic.objects.filter(user=user)
-        serializer = self.get_serializer(tecnic, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if user:
+            tecnic = Tecnic.objects.filter(user=user)
+            if not tecnic:
+                return Response({'error': 'No se encontró ningún técnico con el usuario proporcionado.'}, status=status.HTTP_404_NOT_FOUND)
+            serializer = self.get_serializer(tecnic, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
 
 class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manger.objects.all()
@@ -78,10 +92,14 @@ class CallCenterViewSet(viewsets.ModelViewSet):
     def search_by_user(self, request, *args, **kwargs):
         user_id = kwargs.get('user')
         user = get_object_or_404(User, pk=user_id)
-        callcenter = CallCenter.objects.filter(user=user)
-        serializer = self.get_serializer(callcenter, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        if user:
+            callcenter = CallCenter.objects.filter(user=user)
+            if not callcenter:
+                return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+            serializer = self.get_serializer(callcenter, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -127,6 +145,17 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=['GET'], url_path='search-by-identity/(?P<identity>[^/.]+)', url_name='search-by-identity')
+    def search_by_identity(self, request, *args, **kwargs):
+        identity = kwargs.get('identity')
+        user = User.objects.filter(identity=identity).first()  # Utilizar first() en lugar de filter()
+        if user:
+            serializer = self.get_serializer(user, many=False)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 # Create your views here.
 def is_base64_sha256(s):

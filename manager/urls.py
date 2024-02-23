@@ -12,4 +12,5 @@ urlpatterns = [
     path("unblock_worker/<int:id>", views.unblock_worker, name="unblock_worker"),
     path("clients/", views.clients, name="clients"),
     path("accept_client/<int:id>", views.accept_client, name="accept_client"),
+    path("reject_client/<int:id>", views.reject_client, name="reject_client"),
 ]

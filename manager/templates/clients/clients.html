@@ -87,7 +87,7 @@
                 </td>
                 <td class="actions-buttons">
                     <a href="{% url 'manager:accept_client' client.id %}" class="btn btn-success">Aceptar Pedido</a>
-                    <a href="" class="btn btn-danger">Cancelar Pedido</a>
+                    <a href="{% url 'manager:reject_client' client.id %}" class="btn btn-danger">Rechazar Pedido</a>
                     <br>
                 </td>
             </tr>

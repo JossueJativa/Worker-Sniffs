@@ -217,7 +217,7 @@ def clients(request):
 def accept_client(request, id):
     try:
         client = Client.objects.get(id=id)
-        client.is_accepted_by_manager = True
+        client.is_accepted_by_manager = "Aceptado"
         client.save()
 
         clients = Client.objects.all()
@@ -240,6 +240,23 @@ def accept_client(request, id):
 
         return render(request, "clients/clients.html", {
             "success": "Cliente aceptado correctamente",
+            "clients": clients
+        })
+    except:
+        return render(request, "clients/clients.html", {
+            "message": "No se encontro el cliente",
+            "clients": clients
+        })
+    
+def reject_client(request, id):
+    try:
+        client = Client.objects.get(id=id)
+        client.is_accepted_by_manager = "Rechazado"
+        client.save()
+
+        clients = Client.objects.all()
+        return render(request, "clients/clients.html", {
+            "success": "Cliente rechazado correctamente",
             "clients": clients
         })
     except:

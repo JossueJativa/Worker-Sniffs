@@ -59,7 +59,7 @@ class Client(models.Model):
     date_instalation = models.DateField(blank=True, null=True)
     part_of_day = models.CharField(max_length=20, blank=True, null=True)
     status_instalation = models.CharField(max_length=15, blank=True, null=True)
-    is_accepted_by_manager = models.BooleanField(default=False)
+    is_accepted_by_manager = models.CharField(max_length=20, default="Esperando Aprobación")
     options_to_give_instalation = models.CharField(max_length=20, default="Recoger")
     photo_reciept = models.ImageField(upload_to='reciepts', blank=False, null=False)
 
