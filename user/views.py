@@ -7,7 +7,14 @@ from geopy.geocoders import Nominatim
 # Create your views here.
 def index(request, identity):
     client = Client.objects.get(identity=identity)
-    tecnic = Tecnic.objects.get(clients=client)
+    try:
+        tecnic = Tecnic.objects.get(clients=client)
+    except Tecnic.DoesNotExist:
+        return render(request, 'user/index.html', {
+            'client': client,
+            'tecnic': '',
+            'map': ''
+        })
     lat = str(tecnic.location_lat)
     lon = str(tecnic.location_lon)
 

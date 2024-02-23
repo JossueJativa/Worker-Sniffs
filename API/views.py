@@ -8,6 +8,7 @@ from .serializer import CallCenterSerializer, CommentsSerializer, LoginSerialize
 
 # Django
 from django.db.models.signals import pre_save
+from django.db.models import Count
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
@@ -71,6 +72,23 @@ class TecnicViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    @action(detail=False, methods=['POST'], url_path='assign-client-to-tecnic/(?P<client_id>[^/.]+)', url_name='assign-client-to-tecnic')
+    def assign_client_to_tecnic(self, request, client_id, *args, **kwargs):
+        client = get_object_or_404(Client, pk=client_id)
+        
+        # Obtener un técnico que no tenga clientes
+        tecnic = Tecnic.objects.annotate(num_clients=Count('clients')).filter(num_clients=0).first()
+
+        # Si no hay técnicos sin clientes, obtener el que tenga menos clientes
+        if not tecnic:
+            tecnic = Tecnic.objects.annotate(num_clients=Count('clients')).order_by('num_clients').first()
+
+        if tecnic:
+            tecnic.clients.add(client)
+            return Response({'success': 'Cliente asignado al técnico correctamente.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No hay técnicos disponibles para asignar el cliente.'}, status=status.HTTP_404_NOT_FOUND)
 
 class ManagerViewSet(viewsets.ModelViewSet):
     queryset = Manger.objects.all()

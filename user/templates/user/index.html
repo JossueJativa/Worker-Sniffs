@@ -32,6 +32,10 @@
                     <input type="text" name="days_since_installation" id="days_since_installation" class="form-control" readonly>
                 </div>
                 <div class="input_info">
+                    <label for="is_accept">Fue aceptado por el manager</label>
+                    <input type="text" name="is_accept" id="is_accept" class="form-control" value="{{ client.is_accepted_by_manager }}" readonly>
+                </div>
+                <div class="input_info">
                     <label>Productos a {{ client.options_to_give_instalation }}</label>
                     <table class="table caption-top">
                         <caption>Lista de productos</caption>

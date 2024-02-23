@@ -67,7 +67,7 @@ def configuration(request):
 
         # Convertir el mapa a HTML
         mapa_html_final = mapa_final._repr_html_()
-    except folium.errors.LocationError:
+    except:
         return render(request, 'tecnic/configuration.html', {
             'tecnic': Tecnic.objects.get(user=request.user),
             'map': ''
