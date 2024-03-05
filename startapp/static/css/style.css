@@ -67,6 +67,7 @@ body {
     flex-direction: column;
     flex-wrap: wrap;
     align-content: stretch;
+    justify-content: center;
 }
 
 .login .container .login_title {
@@ -434,4 +435,90 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .login .container {
+        justify-content: start;
+    }
+
+    .login .container .login_title {
+        font-size: 40px;
+    }
+
+    .login .container .input_info label {
+        font-size: 20px;
+    }
+
+    .login .container .input_info input {
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .login .container .login_buttons {
+        margin-top: 0.5rem;
+    }
+
+    .body_form {
+        width: 100% !important;
+        left: 0%;
+    }
+
+    .container_create .input_info label {
+        font-size: 0.8rem;
+    }
+
+    .container_create .input_info input {
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .container_create .select_worker {
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .container_create #imagePreview {
+        padding: 0.5rem;
+    }
+
+    .background .edit_container {
+        width: 80%;
+        padding: 1rem;
+    }
+
+    .background .edit_container .title_edit {
+        font-size: 1.2rem;
+    }
+
+    .background .edit_container .edit_info .input_info label {
+        font-size: 0.8rem;
+    }
+
+    .background .edit_container .edit_info .input_info input {
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .background .edit_container .edit_info .input_info select {
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .search_information .box_finding {
+        width: 40%;
+        height: 30px;
+        padding: 0 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .search_information .box_finding label {
+        font-size: 0.8rem;
+    }
+
+    .search_information .box_finding input {
+        height: 30px;
+        font-size: 0.8rem;
+    }
 }
