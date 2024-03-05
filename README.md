@@ -5,3 +5,6 @@
 > 4. Restriccion: Managers no se podran cambiar de estatus, se debera hacer ya con el usuario administrador que se dara a la persona autorizada.
 > 5. Hasta no poder comprar google cloud, no se podra realizar el seguimiento por maps del Tecnico
 > 6. El tecnico podra guardar su ubicación para que el cliente pueda ir de forma física a donde requiera
+
+# Programador
+> Crear la carpeta media en la raiz del proyecto
