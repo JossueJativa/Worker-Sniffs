@@ -98,10 +98,12 @@ class ManagerViewSet(viewsets.ModelViewSet):
     def search_by_user(self, request, *args, **kwargs):
         user_id = kwargs.get('user')
         user = get_object_or_404(User, pk=user_id)
-        manager = Manger.objects.filter(user=user)
-        serializer = self.get_serializer(manager, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+        if user:
+            manager = Manger.objects.filter(user=user)
+            if not manager:
+                return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+            serializer = self.get_serializer(manager, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 class CallCenterViewSet(viewsets.ModelViewSet):
     queryset = CallCenter.objects.all()
     serializer_class = CallCenterSerializer
