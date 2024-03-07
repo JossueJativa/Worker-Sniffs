@@ -2,32 +2,35 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import login, logout, authenticate
 from API.models import Manger, CallCenter, Tecnic, User
 
-# Create your views here.
-
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        username = User.objects.get(email=email).username
-        
-        user = authenticate(request, username=username, password=password)
+        # Obtener el usuario por su email
+        user = User.objects.filter(email=email).first()
 
-        # Verificamos la contraseña utilizando el método check_password personalizado
         if user is not None:
-            login(request, user)
+            # Autenticar con el campo username
+            user = authenticate(request, username=user.username, password=password)
+            print(user)
 
-            # Buscar que tipo de usuario es y redirigirlo a su pagina
-            if Manger.objects.filter(user=user).exists():
-                return redirect("manager:principal_page")
-            elif CallCenter.objects.filter(user=user).exists():
-                return redirect("callcenter:index")
-            elif Tecnic.objects.filter(user=user).exists():
-                return redirect("tecnic:intro")
+            if user is not None:
+                login(request, user)
+
+                # Buscar qué tipo de usuario es y redirigirlo a su página
+                if Manger.objects.filter(user=user).exists():
+                    return redirect("manager:principal_page")
+                elif CallCenter.objects.filter(user=user).exists():
+                    return redirect("callcenter:index")
+                elif Tecnic.objects.filter(user=user).exists():
+                    return redirect("tecnic:intro")
+                else:
+                    return render(request, "startapp/login_view.html", {"message": "Tipo de usuario no válido"})
             else:
-                return render(request, "startapp/login_view.html", {"message": "Tipo de usuario no valido"})
+                return render(request, "startapp/login_view.html", {"message": "Credenciales incorrectas"})
         else:
-            return render(request, "startapp/login_view.html", {"message": "Credenciales incorrectas"})
+            return render(request, "startapp/login_view.html", {"message": "Usuario no encontrado"})
     else:
         return render(request, "startapp/login_view.html")
 

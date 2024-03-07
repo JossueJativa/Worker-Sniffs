@@ -118,6 +118,8 @@ def delete_worker(request, id):
 
     if callcenter is None and tecnic is None:
         return render(request, "workers/trabajadores.html", {
+            "callcenter": callcenter,
+            "tecnic": tecnic,
             "message": "No se encontro el trabajador"
         })
     
