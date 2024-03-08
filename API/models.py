@@ -68,6 +68,9 @@ class Client(models.Model):
             return self.photo_reciept.url
         return None
     
+    def set_products_bought_ids(self, ids):
+        self.products_bought.set(ids)
+    
 class Certificate(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date_instalation = models.DateField(blank=False, null=False)

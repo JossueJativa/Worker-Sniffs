@@ -1,6 +1,7 @@
 # Importaciones externas
 import base64
 import binascii
+import json
 
 # Importaciones del programa
 from .models import Manger, CallCenter, Certificate, Client, Comments, Problems, Problems_Tikets, Product, Stars, Tecnic, User
@@ -43,6 +44,45 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
+    def create(self, request, *args, **kwargs):
+        # Verificar si el cliente ya existe
+        identity = request.data.get('identity')
+        client = Client.objects.filter(identity=identity).first()
+        if client:
+            return Response({'error': 'El cliente ya existe.'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Sacamos todos los datos del request
+            username = request.data.get('username')
+            identity = request.data.get('identity')
+            phone = request.data.get('phone')
+            total_price = request.data.get('total_price')
+            date_instalation = request.data.get('date_instalation')
+            part_of_day = request.data.get('part_of_day')
+            options_to_give_instalation = request.data.get('options_to_give_instalation')
+            products_bought = request.data.get('products_bought')
+            photo_reciept = request.FILES.get('photo_reciept')
+            # Convertir esto: [4, 6, 8] que es un String a esto: [4, 6, 8] que es una lista
+            products_bought = json.loads(products_bought)
+
+            # Convertir a lista de objetos
+            products_bought = Product.objects.filter(pk__in=products_bought)
+
+            # Creamos el cliente
+            client = Client.objects.create(
+                username=username, 
+                identity=identity, 
+                phone=phone, 
+                total_price=total_price, 
+                date_instalation=date_instalation, 
+                part_of_day=part_of_day, 
+                options_to_give_instalation=options_to_give_instalation, 
+                photo_reciept=photo_reciept
+            )
+            client.set_products_bought_ids(products_bought)
+
+            # Retornamos el serializer
+            return Response(status=status.HTTP_201_CREATED)
+
     @action(detail=False, methods=['GET'], url_path='search-by-identity/(?P<identity>[^/.]+)', url_name='search-by-identity')
     def search_by_identity(self, request, *args, **kwargs):
         identity = kwargs.get('identity')
@@ -51,6 +91,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No se encontró ningún cliente con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(client)  # No usar many=False
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class CertificateViewSet(viewsets.ModelViewSet):
     queryset = Certificate.objects.all()
