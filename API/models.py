@@ -94,6 +94,7 @@ class Tecnic(models.Model):
     country = models.CharField(max_length=50, blank=True, null=True)
     business_name = models.CharField(max_length=50, blank=True, null=True)
     photo = models.ImageField(upload_to='tecnic', blank=True, null=True)
+    token_phone = models.CharField(max_length=20, blank=True, null=True)
 
     def photo_url(self):
         if self.photo:
@@ -109,6 +110,7 @@ class CallCenter(models.Model):
 
     '''
     photo = models.ImageField(upload_to='callcenter', blank=True, null=True)
+    token_phone = models.CharField(max_length=20, blank=True, null=True)
 
     def photo_url(self):
         if self.photo:
@@ -120,6 +122,7 @@ class Manger(models.Model):
     tecnic = models.ManyToManyField(Tecnic, blank=True)
     clients = models.ManyToManyField(Client, blank=True)
     photo = models.ImageField(upload_to='manager', blank=True, null=True)
+    token_phone = models.CharField(max_length=20, blank=True, null=True)
 
     def photo_url(self):
         if self.photo:

@@ -19,6 +19,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
 
+# Firebase
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import messaging
+
 # Create your views here.
 class CommentsViewSet(viewsets.ModelViewSet):
     queryset = Comments.objects.all()
@@ -216,9 +221,38 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+# Notificacion de FCM para el clienteclass PushNotificationAPIView(viewsets.ViewSet):
+    def send_push_message(self, tokens, title, body):
+        cred = credentials.Certificate("workersniffs-48e054632f4e.json")
+        firebase_admin.initialize_app(cred)
 
+        message = messaging.MulticastMessage(
+            notification=messaging.Notification(
+                title=title,
+                body=body
+            ),
+            tokens=tokens
+        )
 
-# Create your views here.
+        response = messaging.send_multicast(message)
+        successes = response.success_count
+        failures = response.failure_count
+        print(f'Successfully sent {successes} messages')
+        print(f'Failed to send {failures} messages')
+
+    @action(detail=False, methods=['POST'])
+    def create(self, request, *args, **kwargs):
+        tokens = request.data.get('tokens')
+        title = request.data.get('title')
+        body = request.data.get('body')
+
+        if not tokens or not title or not body:
+            return Response({'error': 'Tokens, title, and body are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        self.send_push_message(tokens, title, body)
+        return Response({'success': 'Messages sent successfully'}, status=status.HTTP_200_OK)
+
 def is_base64_sha256(s):
     try:
         decoded = base64.b64decode(s)
