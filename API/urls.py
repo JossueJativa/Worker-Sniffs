@@ -20,6 +20,7 @@ router.register('tecnic', views.TecnicViewSet)
 router.register('manager', views.ManagerViewSet)
 router.register('callcenter', views.CallCenterViewSet)
 router.register('user', views.UserViewSet)
+router.register('notifications', views.PushNotificationAPIView, basename='notifications')
 
 urlpatterns = [
     path('', include(router.urls)),

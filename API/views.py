@@ -5,7 +5,7 @@ import json
 
 # Importaciones del programa
 from .models import Manger, CallCenter, Certificate, Client, Comments, Problems, Problems_Tikets, Product, Stars, Tecnic, User
-from .serializer import CallCenterSerializer, CommentsSerializer, LoginSerializer, StarsSerializer, ProductSerializer, ProblemsSerializer, Problems_TiketsSerializer, ClientSerializer, CertificateSerializer, UserSerializer, TecnicSerializer, ManagerSerializer
+from .serializer import CallCenterSerializer, CommentsSerializer, LoginSerializer, PushNotificationSerializer, StarsSerializer, ProductSerializer, ProblemsSerializer, Problems_TiketsSerializer, ClientSerializer, CertificateSerializer, UserSerializer, TecnicSerializer, ManagerSerializer
 
 # Django
 from django.db.models.signals import pre_save
@@ -18,6 +18,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
+from rest_framework import serializers
 
 # Firebase
 import firebase_admin
@@ -222,7 +223,7 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
         
-# Notificacion de FCM para el clienteclass PushNotificationAPIView(viewsets.ViewSet):
+# Notificacion de FCM para el cliente
 class PushNotificationAPIView(viewsets.ViewSet):
     def send_push_message(self, tokens, title, body):
         cred = credentials.Certificate("workersniffs-48e054632f4e.json")
@@ -242,27 +243,22 @@ class PushNotificationAPIView(viewsets.ViewSet):
         print(f'Successfully sent {successes} messages')
         print(f'Failed to send {failures} messages')
 
-    @action(detail=False, methods=['POST'])
     def create(self, request, *args, **kwargs):
-        tokens = []
-        type_user = request.data.get('type_user')
-        if type_user == 'callcenter':
-            for callcenter in CallCenter.objects.all():
-                tokens.append(callcenter.token_phone)
-        elif type_user == 'tecnic':
-            for tecnic in Tecnic.objects.all():
-                tokens.append(tecnic.token_phone)
-        elif type_user == 'manager':
-            for manager in Manger.objects.all():
-                tokens.append(manager.token_phone)
-        else:
-            return Response({'error': 'Invalid user type, the types we have is "manager, tecnic, callcenter"'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        title = request.data.get('title')
-        body = request.data.get('body')
+        serializer = PushNotificationSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if not title or not body:
-            return Response({'error': 'Title, and body are required'}, status=status.HTTP_400_BAD_REQUEST)
+        type_user = serializer.validated_data.get('type_user')
+        title = serializer.validated_data.get('title')
+        body = serializer.validated_data.get('body')
+
+        tokens = []
+        if type_user == 'callcenter':
+            tokens = list(CallCenter.objects.values_list('token_phone', flat=True))
+        elif type_user == 'tecnic':
+            tokens = list(Tecnic.objects.values_list('token_phone', flat=True))
+        elif type_user == 'manager':
+            tokens = list(Manger.objects.values_list('token_phone', flat=True))
 
         self.send_push_message(tokens, title, body)
         return Response({'success': 'Messages sent successfully'}, status=status.HTTP_200_OK)
