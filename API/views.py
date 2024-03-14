@@ -223,6 +223,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
         
 # Notificacion de FCM para el clienteclass PushNotificationAPIView(viewsets.ViewSet):
+class PushNotificationAPIView(viewsets.ViewSet):
     def send_push_message(self, tokens, title, body):
         cred = credentials.Certificate("workersniffs-48e054632f4e.json")
         firebase_admin.initialize_app(cred)
@@ -243,12 +244,25 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['POST'])
     def create(self, request, *args, **kwargs):
-        tokens = request.data.get('tokens')
+        tokens = []
+        type_user = request.data.get('type_user')
+        if type_user == 'callcenter':
+            for callcenter in CallCenter.objects.all():
+                tokens.append(callcenter.token_phone)
+        elif type_user == 'tecnic':
+            for tecnic in Tecnic.objects.all():
+                tokens.append(tecnic.token_phone)
+        elif type_user == 'manager':
+            for manager in Manger.objects.all():
+                tokens.append(manager.token_phone)
+        else:
+            return Response({'error': 'Invalid user type, the types we have is "manager, tecnic, callcenter"'}, status=status.HTTP_400_BAD_REQUEST)
+        
         title = request.data.get('title')
         body = request.data.get('body')
 
-        if not tokens or not title or not body:
-            return Response({'error': 'Tokens, title, and body are required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not title or not body:
+            return Response({'error': 'Title, and body are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         self.send_push_message(tokens, title, body)
         return Response({'success': 'Messages sent successfully'}, status=status.HTTP_200_OK)
