@@ -22,8 +22,6 @@ from rest_framework.response import Response
 from rest_framework import viewsets, status
 
 # Firebase
-import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import messaging
 
 # Create your views here.
@@ -252,14 +250,6 @@ class PushNotificationAPIView(viewsets.ViewSet):
         
     
     def send_push_message(self, token, title, body):
-        cred_file_path = os.path.join(settings.STATIC_ROOT, "json", "workersniffs-48e054632f4e.json")
-        print(cred_file_path)
-
-        if not os.path.exists(cred_file_path):
-            return Response({'error': 'The Firebase credentials file does not exist'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        cred = credentials.Certificate(cred_file_path)
-        firebase_admin.initialize_app(cred)
-
         message = messaging.Message(
             notification=messaging.Notification(
                 title=title,
