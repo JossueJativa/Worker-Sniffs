@@ -94,11 +94,3 @@ class CallCenterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CallCenter
         fields = '__all__'
-
-class PushNotificationSerializer(serializers.ModelSerializer):
-    type_user = serializers.ChoiceField(
-        choices=['callcenter', 'tecnic', 'manager'], 
-        required=True
-    )
-    title = serializers.CharField(required=True)
-    body = serializers.CharField(required=True)

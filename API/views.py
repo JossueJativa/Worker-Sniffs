@@ -2,10 +2,11 @@
 import base64
 import binascii
 import json
+import os
 
 # Importaciones del programa
 from .models import Manger, CallCenter, Certificate, Client, Comments, Problems, Problems_Tikets, Product, Stars, Tecnic, User
-from .serializer import CallCenterSerializer, CommentsSerializer, LoginSerializer, PushNotificationSerializer, StarsSerializer, ProductSerializer, ProblemsSerializer, Problems_TiketsSerializer, ClientSerializer, CertificateSerializer, UserSerializer, TecnicSerializer, ManagerSerializer
+from .serializer import CallCenterSerializer, CommentsSerializer, LoginSerializer, StarsSerializer, ProductSerializer, ProblemsSerializer, Problems_TiketsSerializer, ClientSerializer, CertificateSerializer, UserSerializer, TecnicSerializer, ManagerSerializer
 
 # Django
 from django.db.models.signals import pre_save
@@ -13,12 +14,12 @@ from django.db.models import Count
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
+from django.conf import settings
 
 # Rest Framework
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from rest_framework import serializers
 
 # Firebase
 import firebase_admin
@@ -225,43 +226,50 @@ class UserViewSet(viewsets.ModelViewSet):
         
 # Notificacion de FCM para el cliente
 class PushNotificationAPIView(viewsets.ViewSet):
-    def send_push_message(self, tokens, title, body):
-        cred = credentials.Certificate("workersniffs-48e054632f4e.json")
+    def create(self, request, *args, **kwargs):
+        type_user = request.data.get('type_user')
+        title = request.data.get('title')
+        body = request.data.get('body')
+
+        if not type_user or not title or not body:
+            return Response({'error': 'Type user, title, and body are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        tokens = []
+        if type_user.lower() == 'callcenter':
+            tokens = list(CallCenter.objects.values_list('token_phone', flat=True))
+        elif type_user.lower() == 'tecnic':
+            tokens = list(Tecnic.objects.values_list('token_phone', flat=True))
+        elif type_user.lower() == 'manager':
+            tokens = list(Manger.objects.values_list('token_phone', flat=True))
+        else:
+            return Response({'error': 'Invalid user type. The valid types are "manager", "tecnic", "callcenter"'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        for token in tokens:
+            response = self.send_push_message(token, title, body)
+            if not response:
+                return Response({'error': 'The push notification could not be sent'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'success': 'The push notification was sent successfully'}, status=status.HTTP_200_OK)
+        
+    
+    def send_push_message(self, token, title, body):
+        cred_file_path = os.path.join(settings.STATIC_ROOT, "json", "workersniffs-48e054632f4e.json")
+        print(cred_file_path)
+
+        if not os.path.exists(cred_file_path):
+            return Response({'error': 'The Firebase credentials file does not exist'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        cred = credentials.Certificate(cred_file_path)
         firebase_admin.initialize_app(cred)
 
-        message = messaging.MulticastMessage(
+        message = messaging.Message(
             notification=messaging.Notification(
                 title=title,
                 body=body
             ),
-            tokens=tokens
+            token=token
         )
 
-        response = messaging.send_multicast(message)
-        successes = response.success_count
-        failures = response.failure_count
-        print(f'Successfully sent {successes} messages')
-        print(f'Failed to send {failures} messages')
-
-    def create(self, request, *args, **kwargs):
-        serializer = PushNotificationSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        type_user = serializer.validated_data.get('type_user')
-        title = serializer.validated_data.get('title')
-        body = serializer.validated_data.get('body')
-
-        tokens = []
-        if type_user == 'callcenter':
-            tokens = list(CallCenter.objects.values_list('token_phone', flat=True))
-        elif type_user == 'tecnic':
-            tokens = list(Tecnic.objects.values_list('token_phone', flat=True))
-        elif type_user == 'manager':
-            tokens = list(Manger.objects.values_list('token_phone', flat=True))
-
-        self.send_push_message(tokens, title, body)
-        return Response({'success': 'Messages sent successfully'}, status=status.HTTP_200_OK)
+        response = messaging.send(message)
+        return response
 
 def is_base64_sha256(s):
     try:
