@@ -33,7 +33,7 @@ class Product(models.Model):
     price = models.FloatField(blank=False, null=False)
 
 class Problems(models.Model):
-    title_description = models.CharField(max_length=20, blank=False, null=False)
+    title_description = models.CharField(max_length=30, blank=False, null=False)
     description = models.CharField(max_length=200, blank=False, null=False)
     status = models.CharField(max_length=20, default="Baja")
 
@@ -42,6 +42,7 @@ class Problems_Tikets(models.Model):
     problem = models.ForeignKey(Problems, on_delete=models.CASCADE)
     user_with_problem = models.IntegerField(blank=False, null=False)
     type_user = models.CharField(max_length=20, blank=False, null=False)
+    photo = models.ImageField(upload_to='problems', blank=True, null=True)
     '''
     Usuarios con problemas pueden ser:
     - Tecnicos

@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, logout, authenticate
-from API.models import Manger, CallCenter, Tecnic, User
+from API.models import Manger, CallCenter, Problems, Problems_Tikets, Tecnic, User
 
 def login_view(request):
     if request.method == "POST":
@@ -37,3 +37,32 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return render(request, "startapp/login_view.html", {"message": "Logged out"})
+
+def ticket(request, type_user):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        type_problem = request.POST.get("type_problem")
+        description = request.POST.get("description")
+        photo = request.FILES.get("photo")
+
+        # Crear el ticket
+        ticket = Problems_Tikets(
+            description=description,
+            problem=type_problem,
+            user_with_problem=User.objects.filter(email=email).first(),
+            type_user=type_user,
+            photo=photo
+        )
+        ticket.save()
+        return render(request, "ticket/ticket.html", {
+            "type_user": type_user,
+            "success": "Ticket enviado con éxito",
+            "problems": Problems.objects.all(),
+            "tecnic": Tecnic.objects.get(user=request.user)
+        })
+    else:
+        return render(request, "ticket/ticket.html", {
+            "type_user": type_user,
+            "problems": Problems.objects.all(),
+            "tecnic": Tecnic.objects.get(user=request.user)
+        })

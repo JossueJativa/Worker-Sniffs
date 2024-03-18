@@ -14,6 +14,11 @@
                 Configuración
             </li>
         </a>
+        <a href="{% url 'startapp:ticket' 'tecnic' %}">
+            <li class="item_sidebar">
+                Ticket
+            </li>
+        </a>
         <li>Clientes</li>
         {% for client in  tecnic.clients.all %}
         <a href="{% url 'tecnic:client' client.id %}">

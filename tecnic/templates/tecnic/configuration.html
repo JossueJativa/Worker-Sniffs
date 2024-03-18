@@ -9,9 +9,14 @@
                 Inicio
             </li>
         </a>
-        <a href="">
+        <a href="{% url 'tecnic:configuration' %}">
             <li class="item_sidebar" style="color: blue; text-decoration: underline;">
                 Configuración
+            </li>
+        </a>
+        <a href="{% url 'startapp:ticket' 'tecnic' %}">
+            <li class="item_sidebar">
+                Ticket
             </li>
         </a>
         <li>Clientes</li>
