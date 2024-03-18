@@ -43,13 +43,13 @@ def ticket(request, type_user):
         email = request.POST.get("email")
         type_problem = request.POST.get("type_problem")
         description = request.POST.get("description")
-        photo = request.FILES.get("photo")
+        photo = request.FILES.get("image")
 
         # Crear el ticket
         ticket = Problems_Tikets(
             description=description,
-            problem=type_problem,
-            user_with_problem=User.objects.filter(email=email).first(),
+            problem=Problems.objects.get(pk=type_problem),
+            user_with_problem=User.objects.filter(email=email).first().id,
             type_user=type_user,
             photo=photo
         )

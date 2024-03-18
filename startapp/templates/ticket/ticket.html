@@ -100,8 +100,8 @@
                     </div>
 
                     <div class="input_info">
-                        <label for="worker_type">Selecciona el tipo de problema</label>
-                        <select name="worker_type" id="worker_type" class="select_worker">
+                        <label for="type_problem">Selecciona el tipo de problema</label>
+                        <select name="type_problem" id="type_problem" class="select_worker">
                             {% for problem in problems %}
                             <option value="{{ problem.id }}">
                                 {{ problem.title_description }} - {{ problem.description }}
@@ -112,7 +112,7 @@
 
                     <div class="input_info">
                         <label for="description">Describa el problema</label>
-                        <textarea name="" id="description" cols="30" rows="10"></textarea>
+                        <textarea name="description" id="description" cols="30" rows="10"></textarea>
                     </div>
                 </div>
             </div>
