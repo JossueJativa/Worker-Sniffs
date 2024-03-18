@@ -242,12 +242,17 @@ class PushNotificationAPIView(viewsets.ViewSet):
         else:
             return Response({'error': 'Invalid user type. The valid types are "manager", "tecnic", "callcenter"'}, status=status.HTTP_400_BAD_REQUEST)
         
+        sent_successfully = []
         for token in tokens:
-            response = self.send_push_message(token, title, body)
-            if not response:
-                return Response({'error': 'The push notification could not be sent'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({'success': 'The push notification was sent successfully'}, status=status.HTTP_200_OK)
+            if token:
+                response = self.send_push_message(token, title, body)
+                if response:
+                    sent_successfully.append(token)
         
+        if sent_successfully:
+            return Response({'success': f'The push notification was sent successfully to {len(sent_successfully)} users'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No push notifications were sent. No users with valid tokens found.'}, status=status.HTTP_404_NOT_FOUND)
     
     def send_push_message(self, token, title, body):
         message = messaging.Message(
