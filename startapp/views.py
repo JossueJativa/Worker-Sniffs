@@ -36,7 +36,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, "startapp/login_view.html", {"message": "Logged out"})
+    return render(request, "startapp/login_view.html")
 
 def ticket(request, type_user):
     if request.method == "POST":

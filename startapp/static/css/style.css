@@ -460,7 +460,7 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 1185px) {
     .login .container {
         justify-content: start;
     }
