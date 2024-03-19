@@ -49,20 +49,35 @@ def ticket(request, type_user):
         ticket = Problems_Tikets(
             description=description,
             problem=Problems.objects.get(pk=type_problem),
-            user_with_problem=User.objects.filter(email=email).first().id,
+            user_with_problem=email,
             type_user=type_user,
             photo=photo
         )
         ticket.save()
-        return render(request, "ticket/ticket.html", {
-            "type_user": type_user,
-            "success": "Ticket enviado con éxito",
-            "problems": Problems.objects.all(),
-            "tecnic": Tecnic.objects.get(user=request.user)
-        })
+        if (type_user == "tecnic"):
+            return render(request, "ticket/ticket.html", {
+                "type_user": type_user,
+                "success": "Ticket enviado con éxito",
+                "problems": Problems.objects.all(),
+                "tecnic": Tecnic.objects.get(user=request.user)
+            })
+        else:
+            return render(request, "ticket/ticket.html", {
+                "type_user": type_user,
+                "success": "Ticket enviado con éxito",
+                "problems": Problems.objects.all(),
+                "tecnic": None
+            })
     else:
-        return render(request, "ticket/ticket.html", {
-            "type_user": type_user,
-            "problems": Problems.objects.all(),
-            "tecnic": Tecnic.objects.get(user=request.user)
-        })
+        if (type_user == "tecnic"):
+            return render(request, "ticket/ticket.html", {
+                "type_user": type_user,
+                "problems": Problems.objects.all(),
+                "tecnic": Tecnic.objects.get(user=request.user)
+            })
+        else:
+            return render(request, "ticket/ticket.html", {
+                "type_user": type_user,
+                "problems": Problems.objects.all(),
+                "tecnic": None
+            })

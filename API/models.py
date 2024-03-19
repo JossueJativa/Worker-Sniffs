@@ -40,7 +40,7 @@ class Problems(models.Model):
 class Problems_Tikets(models.Model):
     description = models.CharField(max_length=200, blank=False, null=False)
     problem = models.ForeignKey(Problems, on_delete=models.CASCADE)
-    user_with_problem = models.IntegerField(blank=False, null=False)
+    user_with_problem = models.CharField(max_length= 50,blank=False, null=False)
     type_user = models.CharField(max_length=20, blank=False, null=False)
     photo = models.ImageField(upload_to='problems', blank=True, null=True)
     '''
