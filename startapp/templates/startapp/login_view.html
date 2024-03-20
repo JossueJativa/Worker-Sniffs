@@ -13,7 +13,7 @@
                 {{ message }}
             </div>
             {% endif %}
-            <h3 class="login_title">Iniciar sección</h3>
+            <h3 class="login_title">Iniciar sesión</h3>
     
             <form action="{% url 'startapp:login_view' %}" method="post">
                 {% csrf_token %}
@@ -34,7 +34,7 @@
                 </div>
     
                 <div class="login_buttons">
-                    <button class="btn btn-primary" type="submit" style="background-color: #040d26;">Iniciar sección</button>
+                    <button class="btn btn-primary" type="submit" style="background-color: #040d26;">Iniciar sesión</button>
                 </div>
             </form>
         </div>

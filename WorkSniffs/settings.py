@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     # API documentacion
     'rest_framework',
+    'rest_framework.authtoken',
     'coreapi',
     'API',
 ]
@@ -153,6 +154,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuracion de rest framework
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 # User model by API

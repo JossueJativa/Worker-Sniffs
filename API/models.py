@@ -3,6 +3,9 @@ import base64
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import check_password
+
+from rest_framework.authtoken.models import Token
+
 def encrypt_password(password):
     password_bytes = password.encode('utf-8')
     sha256_result = hashlib.sha256(password_bytes)
@@ -96,6 +99,7 @@ class Tecnic(models.Model):
     business_name = models.CharField(max_length=50, blank=True, null=True)
     photo = models.ImageField(upload_to='tecnic', blank=True, null=True)
     token_phone = models.CharField(max_length=200, blank=True, null=True)
+    token = models.OneToOneField(Token, on_delete=models.CASCADE, blank=True, null=True)
 
     def photo_url(self):
         if self.photo:

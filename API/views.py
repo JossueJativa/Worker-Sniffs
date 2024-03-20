@@ -2,7 +2,6 @@
 import base64
 import binascii
 import json
-import os
 
 # Importaciones del programa
 from .models import Manger, CallCenter, Certificate, Client, Comments, Problems, Problems_Tikets, Product, Stars, Tecnic, User
@@ -14,11 +13,12 @@ from django.db.models import Count
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password, check_password
-from django.conf import settings
 
 # Rest Framework
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 from rest_framework import viewsets, status
 
 # Firebase
@@ -26,26 +26,32 @@ from firebase_admin import messaging
 
 # Create your views here.
 class CommentsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
 
 class StarsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Stars.objects.all()
     serializer_class = StarsSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 class ProblemsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Problems.objects.all()
     serializer_class = ProblemsSerializer
 
 class Problems_TiketsViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Problems_Tikets.objects.all()
     serializer_class = Problems_TiketsSerializer
 
 class ClientViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
@@ -99,10 +105,12 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 
 class CertificateViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Certificate.objects.all()
     serializer_class = CertificateSerializer
 
 class TecnicViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Tecnic.objects.all()
     serializer_class = TecnicSerializer
 
@@ -137,6 +145,7 @@ class TecnicViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No hay técnicos disponibles para asignar el cliente.'}, status=status.HTTP_404_NOT_FOUND)
 
 class ManagerViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Manger.objects.all()
     serializer_class = ManagerSerializer
 
@@ -151,6 +160,7 @@ class ManagerViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(manager, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 class CallCenterViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = CallCenter.objects.all()
     serializer_class = CallCenterSerializer
 
@@ -167,6 +177,7 @@ class CallCenterViewSet(viewsets.ModelViewSet):
         else:
             return Response({'error': 'No se encontró ningún usuario con la identidad proporcionada.'}, status=status.HTTP_404_NOT_FOUND)
 class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -224,6 +235,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
 # Notificacion de FCM para el cliente
 class PushNotificationAPIView(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
     def create(self, request, *args, **kwargs):
         type_user = request.data.get('type_user')
         title = request.data.get('title')
