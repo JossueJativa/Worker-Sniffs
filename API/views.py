@@ -251,8 +251,10 @@ class PushNotificationAPIView(viewsets.ViewSet):
             tokens = list(Tecnic.objects.values_list('token_phone', flat=True))
         elif type_user.lower() == 'manager':
             tokens = list(Manger.objects.values_list('token_phone', flat=True))
+        elif type_user is not None:
+            tokens = type_user
         else:
-            return Response({'error': 'Invalid user type. The valid types are "manager", "tecnic", "callcenter"'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid type user'}, status=status.HTTP_400_BAD_REQUEST)
         
         sent_successfully = []
         for token in tokens:
